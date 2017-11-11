@@ -5,6 +5,7 @@ const multiparty = require('connect-multiparty')
 const spawn = require('child_process').spawn
 const config = require('config.json')('./config.json')
 const path = require('path')
+const fs = require('fs')
 
 // Create a new instance of express
 const app = express()
@@ -23,23 +24,31 @@ app.post('/', function (req, res) {
   proc.on('close', function (exitStatus) {
     switch (exitStatus) {
       case 0:
-        console.log(`success: ${output_path}`)
-        //res.set('Content-Type', 'application/pdf')
-        res.sendFile(output_path)
+        console.log(`pdfsizeopt success: ${output_path}`)
+        res.sendFile(output_path, function (err) {
+          // clean up after ourselves if the file was transferred successfully
+          if (!err) {
+            fs.unlink(input_path, function (err) {})
+            fs.unlink(output_path, function (err) {})
+          } else {
+            // keeping files around bc transfer error
+            console.log(`transfer error; keeping ${input_path} and ${output_path}`)
+          }
+        })
         break
       default:
-        console.log(`error: ${exitStatus}`)
+        console.log(`pdfsizeopt error with ${input_path} -> ${output_path}: ${exitStatus}`)
         res.set('Content-Type', 'text/plain')
         res.send('error')
     }
   })
 })
 
-// Tell our app to listen on port 3000
-app.listen(3000, function (err) {
+// Tell our app to listen
+app.listen(config.port, function (err) {
   if (err) {
     throw err
   }
 
-  console.log('Server started on port 3000')
+  console.log(`Server started on port ${config.port}`)
 })
