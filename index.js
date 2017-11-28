@@ -45,7 +45,7 @@ app.post('/', function (req, res) {
 })
 
 // Tell our app to listen
-app.listen(config.port, function (err) {
+app.listen(config.port, config.host, function (err) {
   if (err) {
     throw err
   }

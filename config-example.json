@@ -1,3 +1,6 @@
-{"pdfsizeopt": "/path/to/pdfsizeopt",
- "port": 3000}
+{
+  "pdfsizeopt": "/path/to/pdfsizeopt",
+  "port": 3000,
+  "host": "localhost"
+}
 
